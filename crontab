@@ -1,0 +1,3 @@
+0 */1 * * * /PATH/Permission_Info.sh >> /PATH/perm.log 2>&1
+
+15 */1 * * * /PATH/upload_to_qumulo.sh >> /PATH/qumulo_upload.log 2>&1
