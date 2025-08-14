@@ -1,0 +1,17 @@
+#!/bin/bash
+
+SOURCE_DIR="/YOUR_RAYSYNC_WORKING_DIRECTORY/RaySync" #Directory to backup
+BACKUP_DIR="/YOUR_LOCAL_BACKUP_LOCATION/RaysyncBackup" #Local backup directory
+SMB_MOUNT="/mnt/PMC_RAYSYNC_ROOT" #SMB mount point
+SMB_SUBDIR="POSTIT_TST/RAYSYNC_Backup" #Subdirectory on the SMB share
+BACKUP_NAME="backup_$(date +'%Y-%m-%d').tar.gz"
+
+# Create the tar.gz backup while preserving permissions
+sudo tar -czpf "$BACKUP_DIR/$BACKUP_NAME" -C "$(dirname "$SOURCE_DIR")" "$(basename "$SOURCE_DIR")"
+
+# Retain only the three most recent backups and delete older ones
+cd "$BACKUP_DIR" || exit
+ls -tp | grep -E '\.tar\.gz$' | tail -n +4 | xargs -I {} sudo rm -f -- "{}"
+
+# Copy the backup to the specific subdirectory on the SMB share
+cp --preserve=all "$BACKUP_DIR/$BACKUP_NAME" "$SMB_MOUNT/$SMB_SUBDIR/"
